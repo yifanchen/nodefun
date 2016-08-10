@@ -1,2 +1,2 @@
 # nodefun
-learning node yeah~~
+Node yeah~~
