@@ -1,15 +1,15 @@
-var express = require('express');
-var app = express();
+let express = require('express');
+let app = express();
 
-app.get('/', function(req, res) {
+app.get('/', (req, res) => {
   res.send('George!');
 })
 
-app.get('/hostage', function(req, res) {
+app.get('/hostage', (req, res) => {
   res.send('Hostage!');
 })
 
-var server = app.listen(3000, function() {
-  console.log('Server running at http://localhost:' + server.address().port);
-});
+let server = app.listen(3000, () => {
+  console.log(`Server running at http://localhost: ${server.address().port}`);
+})
 

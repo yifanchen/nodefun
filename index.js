@@ -1,11 +1,11 @@
-var express = require('express')
-var app = express()
-var fs = require('fs')
-var path = require('path')
-var _ = require('lodash')
-var engines = require('consolidate')
-var JSONStream = require('JSONStream')
-var bodyParser = require('body-parser')
+let express = require('express')
+let app = express()
+let fs = require('fs')
+let path = require('path')
+let _ = require('lodash')
+let engines = require('consolidate')
+let JSONStream = require('JSONStream')
+let bodyParser = require('body-parser')
 
 app.engine('hbs', engines.handlebars)
 
@@ -15,19 +15,20 @@ app.set('view engine', 'hbs')
 app.use('/profilepics', express.static('images'))
 app.use(bodyParser.urlencoded({ extended: true }))
 
-app.get('/favicon.ico', function (req, res) {
+app.get('/favicon.ico', (req, res) => {
   res.end()
 })
 
-app.get('/', function (req, res) {
-  var users = []
-  fs.readdir('users', function (err, files) {
+app.get('/', (req, res) => {
+
+  let users = []
+  fs.readdir('users', (err, files) => {
     if (err) throw err
-    files.forEach(function (file) {
-      fs.readFile(path.join(__dirname, 'users', file), {encoding: 'utf8'}, function (err, data) {
+    files.forEach((file) => {
+      fs.readFile(path.join(__dirname, 'users', file), {encoding: 'utf8'}, (err, data) => {
         if (err) throw err
-        var user = JSON.parse(data)
-        user.name.full = _.startCase(user.name.first + ' ' + user.name.last)
+        let user = JSON.parse(data)
+        user.name.full = _.startCase(`${user.name.first} ${user.name.last}`)
         users.push(user)
         if (users.length === files.length) res.render('index', {users: users})
       })
@@ -35,35 +36,35 @@ app.get('/', function (req, res) {
   })
 })
 
-app.get('*.json', function (req, res) {
+app.get('*.json', (req, res) => {
   res.download('./users/' + req.path, 'virus.exe')
 })
 
-app.get('/data/:username', function (req, res) {
-  var username = req.params.username
-  var readable = fs.createReadStream('./users/' + username + '.json')
+app.get('/data/:username', (req, res) => {
+  let username = req.params.username
+  let readable = fs.createReadStream('./users/' + username + '.json')
   readable.pipe(res)
 })
 
-app.get('/users/by/:gender', function (req, res) {
-  var gender = req.params.gender
-  var readable = fs.createReadStream('users.json')
+app.get('/users/by/:gender', (req, res) => {
+  let gender = req.params.gender
+  let readable = fs.createReadStream('users.json')
 
   readable
-    .pipe(JSONStream.parse('*', function (user) {
+    .pipe(JSONStream.parse('*', (user) => {
       if (user.gender === gender) return user.name
     }))
     .pipe(JSONStream.stringify('[\n  ', ',\n  ', '\n]\n'))
     .pipe(res)
 })
 
-app.get('/error/:username', function (req, res) {
-  res.status(404).send('No user named ' + req.params.username + ' found')
+app.get('/error/:username', (req, res) => {
+  res.status(404).send(`No user named ${ req.params.username } found!!`)
 })
 
-var userRouter = require('./username')
+let userRouter = require('./username')
 app.use('/:username', userRouter)
 
-var server = app.listen(3000, function () {
-  console.log('Server running at http://localhost:' + server.address().port)
+let server = app.listen(3000, () => {
+  console.log(`Server running at http://localhost: ${ server.address().port }`);
 })
